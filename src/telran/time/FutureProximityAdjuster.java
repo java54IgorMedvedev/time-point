@@ -6,17 +6,20 @@ public FutureProximityAdjuster(TimePoint[] points) {
     this.timePoints = points;
 }
 
-@Override
 public TimePoint adjust(TimePoint point) {
-    TimePoint closest = null;
+    TimePoint nearestFuture = null;
     int smallestDifference = Integer.MAX_VALUE;
+
     for (TimePoint testPoint : timePoints) {
-        int difference = Math.abs(point.compareTo(testPoint));
-        if (difference < smallestDifference) {
-            smallestDifference = difference;
-            closest = testPoint;
+        int comparison = testPoint.compareTo(point);
+        if (comparison > 0) {  
+            int difference = Math.abs(comparison);
+            if (difference < smallestDifference) {
+                smallestDifference = difference;
+                nearestFuture = testPoint;
+            }
         }
     }
-    return closest;
+    return nearestFuture;
 }
 }
