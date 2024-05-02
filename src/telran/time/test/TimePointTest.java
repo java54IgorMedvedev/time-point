@@ -36,39 +36,47 @@ class TimePointTest {
 	}
 	@Test
 	void timePointEqualsTest() {
-	    TimePoint timePoint1 = new TimePoint(1, TimeUnit.HOUR);
-	    TimePoint timePoint2 = new TimePoint(60, TimeUnit.MINUTE);
-	    TimePoint timePoint3 = new TimePoint(3600, TimeUnit.SECOND);
-	    assertTrue(timePoint1.equals(timePoint2));
-	    assertTrue(timePoint2.equals(timePoint3));
-	    assertTrue(timePoint1.equals(timePoint3));
-	    TimePoint timePoint4 = new TimePoint(2, TimeUnit.HOUR);
-	    assertFalse(timePoint1.equals(timePoint4));
+		TimePoint tp1 = new TimePoint(1, TimeUnit.HOUR);
+		TimePoint tp2 = new TimePoint(60, TimeUnit.MINUTE);
+		TimePoint tp3 = new TimePoint(1, TimeUnit.MINUTE);
+		
+		assertEquals(tp1, tp2);
+		assertNotEquals(tp1, tp3);
 	}
-
 	@Test
 	void timePointCompareToTest() {
-	    TimePoint timePoint1 = new TimePoint(1, TimeUnit.HOUR);
-	    TimePoint timePoint2 = new TimePoint(30, TimeUnit.MINUTE); 
-	    TimePoint timePoint3 = new TimePoint(90, TimeUnit.MINUTE); 
-	    assertTrue(timePoint1.compareTo(timePoint2) > 0);
-	    assertTrue(timePoint1.compareTo(timePoint3) < 0);
-	    assertEquals(0, timePoint1.compareTo(new TimePoint(60, TimeUnit.MINUTE)));
+		TimePoint tp1 = new TimePoint(10, TimeUnit.HOUR);
+		TimePoint tp2 = new TimePoint(60, TimeUnit.MINUTE);
+		TimePoint tp3 = new TimePoint(100, TimeUnit.SECOND);
+		TimePoint tp4 = new TimePoint(1, TimeUnit.HOUR);
+		assertTrue(tp1.compareTo(tp2) > 0);
+		assertTrue(tp3.compareTo(tp1) < 0);
+		assertTrue(tp2.compareTo(tp4) == 0);
+		
+		
 	}
-
 	@Test
-	void futureProximityAdjusterTest() {
-	    TimePoint point = new TimePoint(14, TimeUnit.HOUR);
-	    TimePoint[] timePoints = {
-	        new TimePoint(11, TimeUnit.HOUR),
-	        new TimePoint(12, TimeUnit.HOUR),
-	        new TimePoint(13, TimeUnit.HOUR),
-	        new TimePoint(17, TimeUnit.HOUR),
-	        new TimePoint(20, TimeUnit.HOUR)
-	    };
-	    FutureProximityAdjuster adjuster = new FutureProximityAdjuster(timePoints);
-	    TimePoint closestFuture = point.with(adjuster);
-	    assertEquals(17, closestFuture.getAmount()); 
-	}
+    void futureProximityAdjusterTest() {
+            TimePoint tp1 = new TimePoint(60, TimeUnit.MINUTE);
+            TimePoint tp2=  new TimePoint(90, TimeUnit.MINUTE);
+            TimePoint tp3 = new TimePoint(2, TimeUnit.HOUR);
+            TimePoint tp4 = new TimePoint(4, TimeUnit.HOUR);
+            TimePoint tp5 = new TimePoint(120, TimeUnit.MINUTE);
+            TimePoint [] timePoints = {
+                    tp1, tp2, tp3, tp4, tp5
+                    };
+             TimePoint timePoint =  new TimePoint(90, TimeUnit.MINUTE);
+             TimePointAdjuster adjuster = new FutureProximityAdjuster(timePoints);
+             TimePoint actual = timePoint.with(adjuster);
+              assertEquals(120, actual.getAmount());
+              assertEquals(TimeUnit.MINUTE, actual.getTimeUnit());
+              timePoint = new TimePoint(7200, TimeUnit.SECOND);
+              actual = timePoint.with(adjuster);
+              assertEquals(3600 * 4, actual.getAmount());
+              assertEquals(TimeUnit.SECOND, actual.getTimeUnit());
+              timePoint = new TimePoint(4, TimeUnit.HOUR);
+              actual = timePoint.with(adjuster);
+              assertNull(actual);
+     }
 
 }
